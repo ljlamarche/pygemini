@@ -270,6 +270,11 @@ def plot3d_slice(
     # JUST PICK AN X3 LOCATION FOR THE MERIDIONAL SLICE PLOT,
     # AND AN ALTITUDE FOR THE LAT./LON. SLICE
     ix3 = lx3 // 2 - 1  # arbitrary slice, to match Matlab
+    print('INTERP DEBUG')
+    print(parm.shape)
+    print(xg["x1"][inds1].shape, xg["x2"][inds2].shape)
+    #print(xg["x1"][inds1])
+    #print(zp)
 
     f = interp.RegularGridInterpolator(
         (xg["x1"][inds1], xg["x2"][inds2]),
@@ -280,10 +285,13 @@ def plot3d_slice(
     ix = xp.argsort()
     iy = yp.argsort()
     Xp, Zp = np.meshgrid(xp, zp)
+    print('PANEL 1')
+    #print(f((Xp, Zp))[:, ix])
     plot12(
         xp[ix],
         zp,
-        f((Xp, Zp))[:, ix],
+        #f((Xp, Zp))[:, ix],
+        f((Zp, Xp))[:, ix],
         axs[0],
         clim,
         name=name,
@@ -302,6 +310,8 @@ def plot3d_slice(
 
     parmp = parmp[:, :, iy]  # must be indexed in two steps
 
+    print('PANEL 2')
+    #print(parmp[0, ix, :])
     plot23(xp[ix], yp[iy], parmp[0, ix, :], name, axs[1], cmap=cmap, clim=clim)
     # %% ALT/LAT SLICE (right panel)
     ix2 = lx2 // 2 - 1  # arbitrary slice, to match Matlab
@@ -312,7 +322,19 @@ def plot3d_slice(
     )
 
     Yp, Zp = np.meshgrid(yp, zp)
-    plot13(yp[iy], zp, f((Yp, Zp))[:, iy], axs[2], clim, name=name, cmap=cmap)
+    print('PANEL 3')
+    #print(f((Yp, Zp))[:, iy])
+    #plot13(yp[iy], zp, f((Yp, Zp))[:, iy], axs[2], clim, name=name, cmap=cmap)
+    plot13(
+        yp[iy], 
+        zp, 
+        f((Zp, Yp))[:, iy], 
+        axs[2], 
+        clim, 
+        name=name, 
+        ref_alt=ref_alt, 
+        cmap=cmap,
+    )
 
 
 cart3d_long_ENU = plot_interp

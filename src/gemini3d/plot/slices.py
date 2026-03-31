@@ -25,7 +25,7 @@ def plot12(
         raise ValueError(f"data must have 2 dimensions, you have {parm.shape}")
 
     hi = ax.pcolormesh(
-        x / 1e3, z / 1e3, parm, cmap=cmap, vmin=clim[0], vmax=clim[1], shading="nearest"
+        x / 1e3, z / 1e3, parm, cmap=cmap, vmin=clim[0], vmax=clim[1], shading="nearest",
     )
     ax.yaxis.set_major_locator(MultipleLocator(100))
     ax.set_xlabel("eastward dist. (km)")
@@ -42,6 +42,7 @@ def plot13(
     clim: tuple,
     *,
     name: str,
+    ref_alt: float,
     cmap: str | None = None,
 ) -> None:
     if parm.ndim != 2:
@@ -53,6 +54,7 @@ def plot13(
     ax.yaxis.set_major_locator(MultipleLocator(100))
     ax.set_xlabel("northward dist. (km)")
     ax.set_ylabel("upward dist. (km)")
+    ax.axhline(ref_alt, color="w", linestyle="--", linewidth=2)
     ax.get_figure().colorbar(hi, ax=ax, label=CB_LBL[name])  # type: ignore
 
 
