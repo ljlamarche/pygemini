@@ -266,24 +266,26 @@ def plot3d_slice(
 ) -> None:
     axs = fg.subplots(1, 3, sharey=False, sharex=False)  # type: T.Any
     # fg.suptitle(f"{name}: {time.isoformat()}  {meta['commit']}", y=0.98)
+
+    # CONVERT ANGULAR COORDINATES TO MLAT,MLON
+    ix = xp.argsort()
+    iy = yp.argsort()
+    
     # %% CONVERT TO DISTANCE UP, EAST, NORTH (left panel)
     # JUST PICK AN X3 LOCATION FOR THE MERIDIONAL SLICE PLOT,
     # AND AN ALTITUDE FOR THE LAT./LON. SLICE
     ix3 = lx3 // 2 - 1  # arbitrary slice, to match Matlab
-
     f = interp.RegularGridInterpolator(
         (xg["x1"][inds1], xg["x2"][inds2]),
         parm[:, :, ix3].data.astype(np.float64),
         bounds_error=False,
     )
-    # CONVERT ANGULAR COORDINATES TO MLAT,MLON
-    ix = xp.argsort()
-    iy = yp.argsort()
+
     Xp, Zp = np.meshgrid(xp, zp)
     plot12(
         xp[ix],
         zp,
-        f((Xp, Zp))[:, ix],
+        f((Zp, Xp))[:, ix],
         axs[0],
         clim,
         name=name,
@@ -303,6 +305,7 @@ def plot3d_slice(
     parmp = parmp[:, :, iy]  # must be indexed in two steps
 
     plot23(xp[ix], yp[iy], parmp[0, ix, :], name, axs[1], cmap=cmap, clim=clim)
+
     # %% ALT/LAT SLICE (right panel)
     ix2 = lx2 // 2 - 1  # arbitrary slice, to match Matlab
     f = interp.RegularGridInterpolator(
@@ -312,7 +315,16 @@ def plot3d_slice(
     )
 
     Yp, Zp = np.meshgrid(yp, zp)
-    plot13(yp[iy], zp, f((Yp, Zp))[:, iy], axs[2], clim, name=name, cmap=cmap)
+    plot13(
+        yp[iy], 
+        zp, 
+        f((Zp, Yp))[:, iy], 
+        axs[2], 
+        clim, 
+        name=name, 
+        ref_alt=ref_alt, 
+        cmap=cmap,
+    )
 
 
 cart3d_long_ENU = plot_interp
